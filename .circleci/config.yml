@@ -122,7 +122,6 @@ jobs:
             exit 1
       - slack/notify:
             event: fail
-            channel: eg
             template: basic_fail_1
           
   scan-frontend:  
