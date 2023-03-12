@@ -5,27 +5,16 @@ orbs:
 
   
 # commands:
-#     notify_on_failure:
-#       steps:
-#         - slack/notify:
-#             event: fail
-#             template: basic_fail_1
-#     notify_on_success:
-#       steps:
-#         - slack/notify:
-#             event: pass
-#             template: success_tagged_deployment_1
 #   destroy-environment:
-#     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-#     parameters:
-#       # Add parameter here   
-#     steps:
-#       - run:
-#           name: Destroy environments
-#           when: on_fail
-#           command: |
-#             # Your code here
-#             exit 1
+#       description: Destroy back-end and front-end cloudformation stacks given a workflow IDs.
+#       steps:
+#         - run:
+#             name: Destroy environments
+#             when: on_fail
+#             command: |
+#               aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+#               aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+#               aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -49,9 +38,9 @@ orbs:
 docker_image10: &node_im
   docker:
       - image: circleci/node:13.8.0
-# docker_image11: &aws_im
-#   docker:
-#       - image: amazon/aws-cli
+docker_image11: &aws_im
+  docker:
+      - image: amazon/aws-cli
 # docker_image12: &ansible_im
 #   docker:
 #       - image: python:3.7-alpine3.16
@@ -73,8 +62,6 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      
-
   build-backend:
     <<: *node_im
     steps:
@@ -90,8 +77,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      
-
   test-frontend:
     <<: *node_im
     steps:
@@ -104,7 +89,11 @@ jobs:
             cd frontend
             npm install
             npm run test
-
+            
+      #exit 1
+      # - slack/notify:
+      #       event: fail
+      #       template: basic_fail_1  
   test-backend:
     <<: *node_im
     steps:
@@ -117,11 +106,7 @@ jobs:
             cd backend
             npm install
             npm run test
-            exit 1
-      - slack/notify:
-            event: fail
-            template: basic_fail_1
-          
+      
   scan-frontend:  
       <<: *node_im
       steps:
@@ -138,9 +123,7 @@ jobs:
               npm install
               npm audit fix --audit-level=critical --force
               npm audit fix --audit-level=critical --force
-              npm audit fix
-              
-
+              npm audit fix            
   scan-backend:
       <<: *node_im
       steps:
@@ -159,41 +142,46 @@ jobs:
               npm audit fix --audit-level=critical --force
               npm audit fix --audit-level=critical --force
               npm audit fix
-              
 
-  # deploy-infrastructure:
-  #   docker:
-  #     # Docker image here that supports AWS CLI
-  #   steps:
-  #     # Checkout code from git
-  #     - run:
-  #         name: Ensure back-end infrastructure exists
-  #         command: |
-  #           aws cloudformation deploy \
-  #             --template-file .circleci/files/backend.yml \
-  #             #--tags project=your-tag \
-  #             # --stack-name "your back-end stack name with workflow id" \
-  #             # --parameter-overrides ID="your workflow id"  
-  #             exit 1
-  #     - run:
-  #         name: Ensure front-end infrastructure exist
-  #         command: |
-  #           aws cloudformation deploy \
-  #             --template-file .circleci/files/frontend.yml \
-  #             #--tags project=your-tag \
-  #             # --stack-name "your front-end stack name with workflow id" \
-  #             # --parameter-overrides ID="your workflow id"  
-  #             exit 1
-  #     - run:
-  #         name: Add back-end ip to ansible inventory
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - persist_to_workspace:
-  #         root: ~/
-  #         paths:
-  #           - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure      
+  deploy-infrastructure:
+    <<: *aws_im
+    steps:
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=udapeople \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+          
+      - run:
+          name: Ensure front-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags project=udapeople \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+           
+      - run:
+          name: install tar & gzip utility & dependencies
+          command: yum install -y tar gzip
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            cd .circleci/ansible
+            aws ec2 describe-instances \
+            --filters Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --query  'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text >> ~/project/.circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # - destroy-environment
+      # - revert-migrations
 
 #   configure-infrastructure:
 #     docker:
@@ -340,11 +328,11 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [test-feature-branch]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
       # - run-migrations:
