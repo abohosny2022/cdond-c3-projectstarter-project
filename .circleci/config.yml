@@ -4,7 +4,19 @@ orbs:
   slack: circleci/slack@4.3.0
 
   
-# commands:
+commands:
+    notify_on_failure:
+      steps:
+        - slack/notify:
+            event: fail
+            channel: eg
+            template: basic_fail_1
+    notify_on_success:
+      steps:
+        - slack/notify:
+            event: pass
+            channel: eg
+            template: success_tagged_deployment_1
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
 #     parameters:
@@ -46,6 +58,7 @@ docker_image10: &node_im
 #   docker:
 #       - image: python:3.7-alpine3.16
 
+
 jobs:
   build-frontend:
     <<: *node_im
@@ -59,9 +72,11 @@ jobs:
             cd frontend
             npm install
             npm run build
+            exit 1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - notify_on_failure
 
   build-backend:
     <<: *node_im
@@ -78,6 +93,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - notify_on_success
 
   test-frontend:
     <<: *node_im
