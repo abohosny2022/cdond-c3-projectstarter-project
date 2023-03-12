@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.3.0
+  slack: circleci/slack@4.10.1
 
   
 commands:
@@ -72,11 +72,10 @@ jobs:
             cd frontend
             npm install
             npm run build
-            exit 1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - notify_on_failure
+      
 
   build-backend:
     <<: *node_im
@@ -93,7 +92,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - notify_on_success
+      
 
   test-frontend:
     <<: *node_im
@@ -120,6 +119,11 @@ jobs:
             cd backend
             npm install
             npm run test
+            exit 1
+      - slack/notify:
+            event: fail
+            channel: eg
+            template: basic_fail_1
           
   scan-frontend:  
       <<: *node_im
@@ -138,6 +142,7 @@ jobs:
               npm audit fix --audit-level=critical --force
               npm audit fix --audit-level=critical --force
               npm audit fix
+              
 
   scan-backend:
       <<: *node_im
