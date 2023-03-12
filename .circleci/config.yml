@@ -150,7 +150,7 @@ jobs:
       - run:
           name: Ensure back-end infrastructure exists
           command: |
-            aws --region us-east-1 cloudformation deploy \
+            aws --region us-east-1 aws_access_key_id AKIASWVMTA4KIKAPDOJS aws_secret_access_key 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 cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
@@ -159,7 +159,7 @@ jobs:
       - run:
           name: Ensure front-end infrastructure exists
           command: |
-            aws --region us-east-1 cloudformation deploy \
+            aws --region us-east-1 aws_access_key_id AKIASWVMTA4KIKAPDOJS aws_secret_access_key 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 cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
@@ -172,7 +172,7 @@ jobs:
           name: Add back-end ip to ansible inventory
           command: |
             cd .circleci/ansible
-            aws --region us-east-1 ec2 describe-instances \
+            aws --region us-east-1 aws_access_key_id AKIASWVMTA4KIKAPDOJS aws_secret_access_key 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 ec2 describe-instances \
             --filters Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query  'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> .circleci/ansible/inventory.txt
