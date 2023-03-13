@@ -1,10 +1,10 @@
 ---
-- name: 'update and upgrade packages.'
-  become: true
-  apt:
-    upgrade: true
-    update_cache: true
-    cache_valid_time: 86400
+# - name: 'update and upgrade packages.'
+#   become: true
+#   apt:
+#     upgrade: true
+#     update_cache: true
+#     cache_valid_time: 86400
 - name: remove unneeded deps
   become: true
   apt:
@@ -22,3 +22,9 @@
     global: true
     state: latest
     production: true
+    
+- name: sudo usermod -aG docker root
+  become: True
+  shell:
+    cmd: "usermod -aG docker ubuntu"
+    chdir: .
