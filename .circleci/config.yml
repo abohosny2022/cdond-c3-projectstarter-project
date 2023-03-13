@@ -187,6 +187,8 @@ jobs:
 
   configure-infrastructure:
       <<: *ansible_im
+      docker:
+        - image: amazon/aws-cli
       steps:
         - checkout
         - add_ssh_keys:
