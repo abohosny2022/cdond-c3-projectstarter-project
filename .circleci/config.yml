@@ -175,12 +175,12 @@ jobs:
           command: |
             cd .circleci/ansible
             aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> /root/cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
-            cat /root/cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
+            cat ~/cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
 
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
       # - destroy-environment
       # - revert-migrations
 
@@ -212,7 +212,7 @@ jobs:
               echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
               cat backend/.env
               cd .circleci/ansible
-              cat /root/cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
+              cat ~/cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
               #test
               ansible-playbook -i inventory.txt configure-server.yml
         # - destroy-environment
