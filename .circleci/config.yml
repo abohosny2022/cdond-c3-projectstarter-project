@@ -213,7 +213,6 @@ jobs:
               echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
               cat backend/.env
               cd .circleci/ansible
-              cat 'C:\Users\moham\Documents\cdond-c3-projectstarter-project\.circleci\ansible\inventory.txt'
               ansible-playbook -i inventory.txt configure-server.yml
         # - destroy-environment
         # - revert-migrations
