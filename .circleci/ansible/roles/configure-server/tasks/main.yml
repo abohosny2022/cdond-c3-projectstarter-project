@@ -22,9 +22,9 @@
     global: true
     state: latest
     production: true
-
-# - name: sudo usermod -aG docker root
-#   become: True
-#   shell:
-#     cmd: "usermod -aG docker ubuntu"
-#     chdir: .
+- name: "install docker."
+  become: true
+  apt:
+    name: ["docker.io"]
+    state: latest
+    update_cache: yes
