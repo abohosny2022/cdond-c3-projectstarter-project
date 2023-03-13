@@ -182,7 +182,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - 'C:\Users\moham\Documents\cdond-c3-projectstarter-project\.circleci\ansible\inventory.txt'
+            - project/.circleci/ansible/inventory.txt
       - destroy-environment
       # - revert-migrations
 
