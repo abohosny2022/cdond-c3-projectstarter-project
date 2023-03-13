@@ -196,6 +196,9 @@ jobs:
         - attach_workspace:
             at: ~/
         - run:
+            name: install tar & gzip utility & dependencies
+            command: yum install -y tar gzip
+        - run:
             name: Install Dependencies
             command: |
               apk add ansible gzip openssh-client
