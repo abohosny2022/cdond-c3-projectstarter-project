@@ -179,9 +179,9 @@ jobs:
             --query  'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> 'C:\Users\moham\Documents\cdond-c3-projectstarter-project\.circleci\ansible\inventory.txt'
       - persist_to_workspace:
-          root: ~/
+          root: 'C:\Users\moham\Documents\'
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
       # - destroy-environment
       # - revert-migrations
 
@@ -213,6 +213,7 @@ jobs:
               echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
               cat backend/.env
               cd .circleci/ansible
+              cat 'C:\Users\moham\Documents\cdond-c3-projectstarter-project\.circleci\ansible\inventory.txt'
               ansible-playbook -i inventory.txt configure-server.yml
         # - destroy-environment
         # - revert-migrations
