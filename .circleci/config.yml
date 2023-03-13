@@ -185,7 +185,7 @@ jobs:
       - destroy-environment
       # - revert-migrations
 
-configure-infrastructure:
+  configure-infrastructure:
       <<: *ansible_im
       steps:
         - checkout
