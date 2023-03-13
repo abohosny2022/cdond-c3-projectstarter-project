@@ -178,7 +178,7 @@ jobs:
             cat 'C:\Users\moham\Documents\cdond-c3-projectstarter-project\.circleci\ansible\inventory.txt'
 
       - persist_to_workspace:
-          root: 'C:\Users\moham\Documents\'
+          root: ~\
           paths:
             - cdond-c3-projectstarter-project/.circleci/ansible/inventory.txt
       # - destroy-environment
