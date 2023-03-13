@@ -177,7 +177,7 @@ jobs:
             pwd
             cd .circleci/ansible
             aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
-            
+            cat inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
