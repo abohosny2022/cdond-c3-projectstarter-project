@@ -212,6 +212,7 @@ jobs:
               cat backend/.env
               cd .circleci/ansible
               cat inventory.txt
+              #test
               ansible-playbook -i inventory.txt configure-server.yml
         # - destroy-environment
         # - revert-migrations
