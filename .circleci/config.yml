@@ -186,9 +186,9 @@ jobs:
       # - revert-migrations
 
   configure-infrastructure:
-      <<: *ansible_im
       docker:
         - image: amazon/aws-cli
+        - image: python:3.7-alpine3.16
       steps:
         - checkout
         - add_ssh_keys:
@@ -196,12 +196,12 @@ jobs:
         - run:
             name: install tar & gzip utility & dependencies
             command: yum install -y tar gzip
-        - attach_workspace:
-            at: ~/
         - run:
             name: Install Dependencies
             command: |
               apk add ansible gzip openssh-client
+        - attach_workspace:
+            at: ~/
         - run:
             name: Configure server
             command: |
