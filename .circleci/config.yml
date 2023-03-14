@@ -203,6 +203,10 @@ jobs:
               cat inventory.txt
               ansible-playbook -i inventory.txt configure-server.yml -vv
               # ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project/backend
         # - destroy-environment
         - revert-migrations 
   run-migrations:
@@ -212,7 +216,9 @@ jobs:
       steps:
           - checkout
           - restore_cache:
-              keys: [build-backend]
+              keys: [backend-build]
+          - attach_workspace:
+             at: ~/
           - run:
               name: Run migrations
               command: |
@@ -236,6 +242,8 @@ jobs:
         - image: hosny232/aws-node
       steps:
         - checkout
+        - restore_cache:
+            keys: [frontend-build]
         - attach_workspace:
             at: ~/
         - run:
@@ -272,6 +280,8 @@ jobs:
         - checkout
         - add_ssh_keys:
               fingerprints: ["5b:5f:81:8d:62:b8:1e:23:0d:fa:0f:78:af:73:d5:16"]
+        - restore_cache:
+            keys: [backend-build]
         - attach_workspace:
             at: ~/
         - run:
@@ -304,6 +314,10 @@ jobs:
           - image: hosny232/aws-node
       steps:
         - checkout
+        - restore_cache:
+            keys: [backend-build]
+        - attach_workspace:
+            at: ~/
         - run:
             name: Backend smoke tests .
             command: |
