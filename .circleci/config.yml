@@ -203,7 +203,7 @@ jobs:
               cat inventory.txt
               ansible-playbook -i inventory.txt configure-server.yml -vv
               # ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
-        - destroy-environment
+        # - destroy-environment
         - revert-migrations 
   run-migrations:
       <<: *node_im
@@ -269,7 +269,7 @@ jobs:
       steps:
         - checkout
         - add_ssh_keys:
-              fingerprints: ["96:9f:69:bf:88:57:05:8e:52:1a:07:e4:4a:f7:9f:f5"]
+              fingerprints: ["5b:5f:81:8d:62:b8:1e:23:0d:fa:0f:78:af:73:d5:16"]
         - attach_workspace:
             at: ~/
         - run:
@@ -296,7 +296,6 @@ jobs:
               ansible-playbook -i inventory.txt deploy-backend.yml
         - destroy-environment
         - revert-migrations
-
   smoke-test:
       <<: *node_im
       docker:
