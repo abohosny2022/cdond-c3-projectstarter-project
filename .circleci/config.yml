@@ -313,7 +313,7 @@ jobs:
               echo $API_URL
               if curl "${API_URL}/api/status" | grep "ok"
               then 
-                return 0 
+                return 1
               else 
                 return 1 
               fi
@@ -324,27 +324,35 @@ jobs:
               echo $URL
               if curl ${URL} | grep "Welcome"
               then 
-                return 1
+                return 0
               else 
                 return 1
               fi
         - destroy-environment
         - revert-migrations
-
-#   cloudfront-update:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Update cloudfront distribution
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  cloudfront-update:
+      <<: *node_im
+      docker:
+          - image: hosny232/aws-node
+      steps:
+        - checkout
+        - run:
+            name: Save Old Workflow ID
+            command: |
+              export OLD_CIRCLE_WORKFLOW_ID=$(aws cloudformation list-exports \
+                  --query "Exports[?Name=='WorkflowID'].Value" --output text)
+              echo OLD_CIRCLE_WORKFLOW_ID = "${OLD_CIRCLE_WORKFLOW_ID}"
+              curl -k https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OLD_CIRCLE_WORKFLOW_ID}"
+        - run:
+            name: Update cloudfront distribution
+            command: |
+              aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name InitialStack \
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
+              --tags project=udapeople
+        - destroy-environment
+        - revert-migrations
 
 # cleanup:
 #     docker:
