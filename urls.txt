@@ -1,4 +1,6 @@
 1. Public Url to GitHub repository (not private) [URL01]
     https://github.com/abohosny2022/cdond-c3-projectstarter-project
 2. Public URL for your S3 Bucket (aka, your front-end). [URL02]
-	http://udapeople-ddee201.s3-website-us-east-1.amazonaws.com
+	http://udapeople-7ac9d87.s3-website-us-east-1.amazonaws.com
+3. deployed and functioning front-end application in CloudFront. [URL03_SCREENSHOT]
+    http://d21eltmoghqkdd.cloudfront.net
